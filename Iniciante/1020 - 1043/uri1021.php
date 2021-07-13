@@ -63,8 +63,6 @@
                 $valor %= 1;
                 break;
         }
-        echo $valor;
-        fgets(STDIN);
     }
 
     echo "NOTAS:\n";
