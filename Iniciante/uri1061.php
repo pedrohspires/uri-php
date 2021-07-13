@@ -10,47 +10,61 @@
  * ajudar Pedrinho a calcular a duração deste evento.
 */
 
-$dia1 = explode(' ', fgets(STDIN));
-$horario1 = explode(' : ', fgets(STDIN));
-$dia2 = explode(' ', fgets(STDIN));
-$horario2 = explode(' : ', fgets(STDIN));
+class TempEvent{
+    private $dia1, $dia2;
+    private $horario1, $horario2;
+    private $total;
+    private int $dias, $horas, $minutos, $segundos;
 
-$dias = $dia2[1] - $dia1[1];
-if($horario1[0] > $horario2[0]){
-    $horario2[0] += 24;
-} 
-$horas = $horario2[0] - $horario1[0];
+    private function lerHorario1($horario){
+        $this->horario1 = $horario;
+    }
 
-if($horario1[1] > $horario2[1]){
-    $horario2[1] += 60;
-    $horas--;
+    private function lerHorario2($horario){
+        $this->horario2 = $horario;
+    }
+
+    public function ler(){
+        $this->dia1 = explode(' ', fgets(STDIN));
+        $this->lerHorario1(explode(' : ', fgets(STDIN)));
+        $this->dia2 = explode(' ', fgets(STDIN));
+        $this->lerHorario2(explode(' : ', fgets(STDIN)));
+    }
+
+    private function transformarParaSegundos($dia, $horario){
+        return ((((($dia[1]*24)+$horario[0])*60)+$horario[1])*60)+$horario[2];
+    }
+
+    public function calcularTempo(){
+        $tempo1 = $this->transformarParaSegundos($this->dia1, $this->horario1);
+        $tempo2 = $this->transformarParaSegundos($this->dia2, $this->horario2);
+        $this->total = $tempo2 - $tempo1;
+    }
+
+    private function formatarTempo($num){
+        $temp = $this->total;
+        $this->total = intval(floor($this->total / $num));
+        return intval(floor($temp % $num));
+    }
+
+    public function formata(){
+        $this->segundos = $this->formatarTempo(60);
+        $this->minutos = $this->formatarTempo(60);
+        $this->horas = $this->formatarTempo(24);
+        $this->dias = $this->total;
+    }
+
+    public function show(){
+        echo "{$this->dias} dia(s)\n";
+        echo "{$this->horas} hora(s)\n";
+        echo "{$this->minutos} minuto(s)\n";
+        echo "{$this->segundos} segundo(s)\n";
+    }
 }
-$minutos = $horario2[1] - $horario1[1];
-
-if($horario1[2] > $horario2[2]){
-    $horario2[2] += 60;
-    $minutos--;
-}
-$segundos = $horario2[2] - $horario1[2];
 
 
-echo "$dias dia(s)\n";
-echo "$horas hora(s)\n";
-echo "$minutos minuto(s)\n";
-echo "$segundos segundo(s)\n";
-
-
-/**
- * Caso de erro:
- * 
- * Dia 5
- * 08 : 50 : 37
- * Dia 6
- * 08 : 50 : 38
- * 
- * Saída esperada:
- * 1 dia(s)
- * 0 hora(s)
- * 0 minuto(s)
- * 1 segundo(s)
- */
+$evento = new TempEvent();
+$evento->ler();
+$evento->calcularTempo();
+$evento->formata();
+$evento->show();
